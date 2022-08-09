@@ -1,25 +1,40 @@
 using Application.Common.Interfaces.Authentication;
+using Application.Common.Interfaces.Persistence;
+using Domain.Entities;
+
 namespace Application.Services;
 public class AuthenticationService : IAuthenticationService
 {
   private readonly IJwtTokenGenerator _jwtTokenGenerator;
+  private readonly IUserRepository _iUserRepository;
 
-  public AuthenticationService(IJwtTokenGenerator jwtTokenGenerator)
+  public AuthenticationService(IJwtTokenGenerator jwtTokenGenerator, IUserRepository iUserRepository)
   {
     _jwtTokenGenerator = jwtTokenGenerator;
+    _iUserRepository = iUserRepository;
   }
 
   public AuthenticationResult Register(string firstName, string lastName, string email, string password)
   {
-    // Check if the user already exists
-
+    // Vallidate user doesn't exist
+    if (_iUserRepository.GetUserByEmail(email) is not null)
+    {
+      throw new Exception("User with email: " + email + " already registered");
+    }
     // Create an user (Generate unique identifier)
-
+    var user = new User
+    {
+      FirstName = firstName,
+      LastName = lastName,
+      Email = email,
+      Password = password
+    };
+    // Persist it to database
+    _iUserRepository.Add(user);
     // Create JWT Token
-    Guid userId = Guid.NewGuid();
-    var token = _jwtTokenGenerator.GenerateToken(userId, firstName, lastName);
+    var token = _jwtTokenGenerator.GenerateToken(user.Id, firstName, lastName);
     return new AuthenticationResult(
-      userId,
+      user.Id,
       firstName,
       lastName,
       email,
@@ -28,11 +43,26 @@ public class AuthenticationService : IAuthenticationService
 
   public AuthenticationResult Login(string email, string password)
   {
+    // Validate the user exists
+    if (_iUserRepository.GetUserByEmail(email) is not User user)
+    {
+      throw new Exception("The user with given email " + email + " does not exist");
+    }
+    // Validate the password is correct
+    if (user.Password != password)
+    {
+      throw new Exception("Invalid password");
+    }
+    // Create the JWT token and return it to the user
+    var token = _jwtTokenGenerator.GenerateToken(
+      user.Id,
+      user.FirstName,
+      user.LastName);
     return new AuthenticationResult(
-      Guid.NewGuid(),
-      "firstName",
-      "lastName",
-      email,
-      "token");
+      user.Id,
+      user.FirstName,
+      user.LastName,
+      user.Email,
+      token);
   }
 }
