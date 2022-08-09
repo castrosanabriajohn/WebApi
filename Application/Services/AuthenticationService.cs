@@ -32,13 +32,8 @@ public class AuthenticationService : IAuthenticationService
     // Persist it to database
     _iUserRepository.Add(user);
     // Create JWT Token
-    var token = _jwtTokenGenerator.GenerateToken(user.Id, firstName, lastName);
-    return new AuthenticationResult(
-      user.Id,
-      firstName,
-      lastName,
-      email,
-      token);
+    var token = _jwtTokenGenerator.GenerateToken(user);
+    return new AuthenticationResult(user, token);
   }
 
   public AuthenticationResult Login(string email, string password)
@@ -54,15 +49,7 @@ public class AuthenticationService : IAuthenticationService
       throw new Exception("Invalid password");
     }
     // Create the JWT token and return it to the user
-    var token = _jwtTokenGenerator.GenerateToken(
-      user.Id,
-      user.FirstName,
-      user.LastName);
-    return new AuthenticationResult(
-      user.Id,
-      user.FirstName,
-      user.LastName,
-      user.Email,
-      token);
+    var token = _jwtTokenGenerator.GenerateToken(user);
+    return new AuthenticationResult(user, token);
   }
 }

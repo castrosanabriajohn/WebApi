@@ -24,10 +24,10 @@ public class AuthenticationController : ControllerBase
       request.Password);
     // Maps a new authentication response contract based on the result object passed 
     var response = new AuthenticationResponse(
-      authResult.Id,
-      authResult.FirstName,
-      authResult.LastName,
-      authResult.Email,
+      authResult.User.Id,
+      authResult.User.FirstName,
+      authResult.User.LastName,
+      authResult.User.Email,
       authResult.Token
     );
     return Ok(response);
@@ -40,10 +40,10 @@ public class AuthenticationController : ControllerBase
       request.Email,
       request.Password);
     var response = new AuthenticationResponse(
-      authResult.Id,
-      authResult.FirstName,
-      authResult.LastName,
-      authResult.Email,
+      authResult.User.Id,
+      authResult.User.FirstName,
+      authResult.User.LastName,
+      authResult.User.Email,
       authResult.Token
     );
     return Ok(response);
