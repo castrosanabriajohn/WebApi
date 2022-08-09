@@ -7,21 +7,22 @@ namespace API.Controllers;
 [Route("auth")]
 public class AuthenticationController : ControllerBase
 {
-  private readonly IAuthenticationService _authenticationService;
+  private readonly IAuthenticationService _iAuthenticationService;
 
-  public AuthenticationController(IAuthenticationService authenticationService)
+  public AuthenticationController(IAuthenticationService IauthenticationService)
   {
-    _authenticationService = authenticationService;
+    _iAuthenticationService = IauthenticationService;
   }
 
   [HttpPost("register")]
-  public IActionResult Register(RegisterRequest request)
-  {
-    var authResult = _authenticationService.Register(
+  public IActionResult Register(RegisterRequest request) // Receives contract parameters
+  { // Creates new authentication result via interface passing the contract parameters
+    var authResult = _iAuthenticationService.Register(
       request.FirstName,
       request.LastName,
       request.Email,
       request.Password);
+    // Maps a new authentication response contract based on the result object passed 
     var response = new AuthenticationResponse(
       authResult.Id,
       authResult.FirstName,
@@ -35,7 +36,7 @@ public class AuthenticationController : ControllerBase
   [HttpPost("login")]
   public IActionResult Login(LoginRequest request)
   {
-    var authResult = _authenticationService.Login(
+    var authResult = _iAuthenticationService.Login(
       request.Email,
       request.Password);
     var response = new AuthenticationResponse(

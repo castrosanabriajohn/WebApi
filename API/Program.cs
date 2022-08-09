@@ -1,8 +1,9 @@
-using Application.Services;
+using Application;
+using Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 {
-  builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+  builder.Services.AddApplication().AddInfrastructure();
   builder.Services.AddControllers();
 }
 

@@ -7,7 +7,7 @@ public interface IAuthenticationService
     string email,
     string password);
   AuthenticationResult Login(
-    string Email,
-    string Password
+    string email,
+    string password
   );
 }
